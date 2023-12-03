@@ -1,6 +1,6 @@
 {
   "name": "@rosmarinus/node-utils",
-  "version": "0.2.1",
+  "version": "0.0.0",
   "description": "node-utils for rosmarinus projects",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
