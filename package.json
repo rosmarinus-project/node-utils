@@ -1,0 +1,50 @@
+{
+  "name": "@rosmarinus/template-name",
+  "version": "0.2.1",
+  "description": "template-name for rosmarinus projects",
+  "main": "dist/cjs/index.js",
+  "module": "dist/es/index.js",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "dev": "rollup -c rollup.config.mjs -w",
+    "build": "rimraf dist && rollup -c rollup.config.mjs",
+    "release": "rosmarinus-publish publish",
+    "test:unit": "jest --runInBand",
+    "prepare": "husky install"
+  },
+  "files": [
+    "dist/",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rosmarinus-project/template-name.git"
+  },
+  "keywords": [
+    "rosmarinus"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "tslib": "^2.6.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.22.5",
+    "@babel/preset-env": "^7.16.8",
+    "@babel/preset-typescript": "^7.16.7",
+    "@rosmarinus/common-plugins": "^0.1.8",
+    "@rosmarinus/eslint-config-rosmarinus": "^1.0.4",
+    "@rosmarinus/local-publish-tool": "^1.1.1",
+    "@types/jest": "^27.4.0",
+    "@types/node": "^18.14.0",
+    "husky": "^8.0.3",
+    "jest": "^27.4.7",
+    "jest-json-reporter": "^1.2.2",
+    "rimraf": "^5.0.5",
+    "rollup": "^4.3.0",
+    "typescript": "^5.2.2"
+  },
+  "packageManager": "pnpm@8.9.0"
+}
