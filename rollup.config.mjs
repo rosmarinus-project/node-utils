@@ -1,24 +1,46 @@
 import common from '@rosmarinus/common-plugins';
-import { defineConfig } from 'rollup';
+import { sync } from 'glob';
 
-const external = [];
+// 非全平台通用的 npm 需要在这里添加
+const external = ['@rollup/plugin-babel'];
 
-/**
- * @param {import('rollup').InternalModuleFormat} format
- * @param {string | undefined} banner
- */
-function getConfig(format, banner = undefined) {
-  return defineConfig({
-    input: 'src/index.ts',
+const inputs = ['src/index.ts', ...sync('src/modules/*.ts')];
+
+const inputObj = inputs.reduce((acc, cur) => {
+  const name = cur.replace('src/', '').replace('.ts', '');
+
+  acc[name] = cur;
+
+  return acc;
+}, {});
+
+// eslint-disable-next-line max-params
+function getConfig(format, input, output, tsconfig = './tsconfig.json') {
+  const dir = `dist/${output || format}`;
+
+  return {
+    input: input || inputObj,
     output: {
-      file: `dist/${format}/index.js`,
+      dir,
       format,
-      banner,
       sourcemap: true,
     },
     external,
-    plugins: [common()],
-  });
+    plugins: [
+      common({
+        ts: {
+          outDir: dir,
+          declarationDir: dir,
+          tsconfig,
+        },
+      }),
+    ],
+  };
 }
 
-export default [getConfig('cjs'), getConfig('es')];
+export default [
+  getConfig('cjs'),
+  getConfig('es'),
+  getConfig('cjs', 'plugin/babel-plugin.ts', 'cjs-babel-plugin', 'tsconfig.babel.json'),
+  getConfig('es', 'plugin/babel-plugin.ts', 'es-babel-plugin', 'tsconfig.babel.json'),
+];

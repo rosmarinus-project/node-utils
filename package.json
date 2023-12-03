@@ -1,7 +1,7 @@
 {
-  "name": "@rosmarinus/template-name",
+  "name": "@rosmarinus/node-utils",
   "version": "0.2.1",
-  "description": "template-name for rosmarinus projects",
+  "description": "node-utils for rosmarinus projects",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
   "publishConfig": {
@@ -10,10 +10,27 @@
   },
   "scripts": {
     "dev": "rollup -c rollup.config.mjs -w",
-    "build": "rimraf dist && rollup -c rollup.config.mjs",
+    "build": "npm run build:lib && npm run build:map",
+    "build:lib": "rimraf dist && rollup -c rollup.config.mjs",
+    "build:map": "rosmarinus-import-map-generator gen-export-map --config map.config.js",
     "release": "rosmarinus-publish publish",
     "test:unit": "jest --runInBand",
     "prepare": "husky install"
+  },
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/es/index.d.ts",
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/es/index.js"
+    },
+    "./modules/*": {
+      "types": "./dist/es/modules/*.d.ts",
+      "require": "./dist/cjs/modules/*.js",
+      "import": "./dist/es/modules/*.js"
+    },
+    "./babel-plugin": "./dist/cjs-babel-plugin/babel-plugin.js",
+    "./*": "./*"
   },
   "files": [
     "dist/",
@@ -21,24 +38,35 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/rosmarinus-project/template-name.git"
+    "url": "https://github.com/rosmarinus-project/node-utils.git"
   },
   "keywords": [
     "rosmarinus"
   ],
   "license": "MIT",
   "dependencies": {
-    "tslib": "^2.6.2"
+    "@babel/helper-plugin-utils": "^7.22.5",
+    "@rosmarinus/common-utils": "^2.5.0",
+    "triple-beam": "^1.4.1",
+    "tslib": "^2.6.2",
+    "winston": "^3.11.0",
+    "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
     "@babel/core": "^7.22.5",
     "@babel/preset-env": "^7.16.8",
     "@babel/preset-typescript": "^7.16.7",
-    "@rosmarinus/common-plugins": "^0.1.8",
+    "@rosmarinus/babel-plugin-tree-cutting": "^2.1.2",
+    "@rosmarinus/common-plugins": "^0.2.2",
     "@rosmarinus/eslint-config-rosmarinus": "^1.0.4",
+    "@rosmarinus/import-map-generator": "^0.2.3",
     "@rosmarinus/local-publish-tool": "^1.1.1",
+    "@types/babel__core": "^7.20.5",
+    "@types/babel__helper-plugin-utils": "^7.10.3",
     "@types/jest": "^27.4.0",
     "@types/node": "^18.14.0",
+    "@types/triple-beam": "^1.3.5",
+    "glob": "^10.3.10",
     "husky": "^8.0.3",
     "jest": "^27.4.7",
     "jest-json-reporter": "^1.2.2",
