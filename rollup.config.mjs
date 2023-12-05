@@ -4,7 +4,7 @@ import { sync } from 'glob';
 // 非全平台通用的 npm 需要在这里添加
 const external = ['@rollup/plugin-babel'];
 
-const inputs = ['src/index.ts', ...sync('src/modules/*.ts')];
+const inputs = ['src/index.ts', ...sync('src/modules/*.ts'), ...sync('src/functions/*.ts')];
 
 const inputObj = inputs.reduce((acc, cur) => {
   const name = cur.replace('src/', '').replace('.ts', '');
