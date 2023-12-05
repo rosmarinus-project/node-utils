@@ -1,6 +1,6 @@
 {
   "name": "@rosmarinus/node-utils",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "node-utils for rosmarinus projects",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
@@ -66,7 +66,7 @@
     "@rosmarinus/common-plugins": "^0.2.2",
     "@rosmarinus/eslint-config-rosmarinus": "^1.0.4",
     "@rosmarinus/import-map-generator": "^0.2.3",
-    "@rosmarinus/local-publish-tool": "^1.1.1",
+    "@rosmarinus/local-publish-tool": "^2.0.0",
     "@types/babel__core": "^7.20.5",
     "@types/babel__helper-plugin-utils": "^7.10.3",
     "@types/jest": "^27.4.0",
