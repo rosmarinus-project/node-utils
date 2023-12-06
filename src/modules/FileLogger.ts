@@ -2,6 +2,7 @@ import { createLogger, format, transports, type Logger } from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import { SPLAT } from 'triple-beam';
 import { safeJSONStringify } from '@rosmarinus/common-utils';
+import { transformTimeZoneInString } from '../functions/time-zone';
 
 export type FileLogger = Logger;
 
@@ -16,12 +17,17 @@ export interface FileLoggerOptions {
   fileMode?: 'console' | 'one-file' | 'in-hour';
   /** 默认 info */
   fileLevel?: 'error' | 'info';
+  /** 默认东八区 */
+  timeZone?: string;
 }
+
+const TIME_FORMAT = 'ZZ YYYY-MM-DD HH:mm:ss';
 
 export function initFileLoggerFactory({
   fileMode = 'in-hour',
   defaultMeta,
   fileLevel = 'info',
+  timeZone = 'Asia/Shanghai',
   logFileDir,
 }: FileLoggerOptions): FileLoggerFactory {
   const customFormat = format.printf((data) => {
@@ -44,7 +50,9 @@ export function initFileLoggerFactory({
       .map((key) => `, ${safeJSONStringify({ [key]: rest[key] })}`)
       .join('');
 
-    return `${timestamp} [${level.toUpperCase()}]: ${message}${notObjMetaOutput}${metaOutput}`;
+    const timeOutput = transformTimeZoneInString(timestamp, TIME_FORMAT, timeZone);
+
+    return `${timeOutput} [${level.toUpperCase()}]: ${message}${notObjMetaOutput}${metaOutput}`;
   });
   const logger = createLogger({
     level: fileLevel,
