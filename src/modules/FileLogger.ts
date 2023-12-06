@@ -19,16 +19,22 @@ export interface FileLoggerOptions {
   fileLevel?: 'error' | 'info';
   /** 默认东八区 */
   timeZone?: string;
+  /** 转换某些特定对象到前边 */
+  transformToPrefix?: {
+    [key: string | symbol]: (val: any) => { output: string };
+  };
 }
 
 const TIME_FORMAT = 'ZZ YYYY-MM-DD HH:mm:ss';
 
+// eslint-disable-next-line max-lines-per-function
 export function initFileLoggerFactory({
   fileMode = 'in-hour',
   defaultMeta,
   fileLevel = 'info',
   timeZone = 'Asia/Shanghai',
   logFileDir,
+  transformToPrefix,
 }: FileLoggerOptions): FileLoggerFactory {
   const customFormat = format.printf((data) => {
     const { level, timestamp, message, ...rest } = data;
@@ -47,12 +53,31 @@ export function initFileLoggerFactory({
         .join('') || '';
 
     const metaOutput = Object.keys(rest)
+      .filter((key) => !transformToPrefix?.[key])
       .map((key) => `, ${safeJSONStringify({ [key]: rest[key] })}`)
       .join('');
 
+    const customPrefixList: string[] = [];
+
+    [...Object.keys(transformToPrefix ?? {}), ...Object.getOwnPropertySymbols(transformToPrefix ?? {})].forEach(
+      (key) => {
+        const nowVal = rest[key];
+
+        if (nowVal) {
+          const output = transformToPrefix?.[key](nowVal).output;
+
+          output && customPrefixList.push(output);
+        }
+      },
+    );
+
+    const customPrefixStr = customPrefixList.join(' ');
+
     const timeOutput = transformTimeZoneInString(timestamp, TIME_FORMAT, timeZone);
 
-    return `${timeOutput} [${level.toUpperCase()}]: ${message}${notObjMetaOutput}${metaOutput}`;
+    return `${timeOutput} [${level.toUpperCase()}]:${
+      customPrefixStr ? ` [${customPrefixStr}]` : ''
+    } ${message}${notObjMetaOutput}${metaOutput}`;
   });
   const logger = createLogger({
     level: fileLevel,
